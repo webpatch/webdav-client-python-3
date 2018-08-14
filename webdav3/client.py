@@ -10,6 +10,7 @@ from re import sub
 
 import lxml.etree as etree
 import requests
+from requests.auth import HTTPDigestAuth
 
 from webdav3.connection import *
 from webdav3.exceptions import *
@@ -158,7 +159,7 @@ class Client(object):
         response = requests.request(
             method=Client.requests[action],
             url=self.get_url(path),
-            auth=(self.webdav.login, self.webdav.password),
+            auth=self.auth,
             headers=self.get_headers(action, headers_ext),
             timeout=self.timeout,
             data=data
@@ -222,6 +223,10 @@ class Client(object):
         self.webdav = WebDAVSettings(webdav_options)
         self.proxy = ProxySettings(proxy_options)
         self.default_options = {}
+        if self.webdav.authtype and self.webdav.authtype == 'digest':
+            self.auth = HTTPDigestAuth(webdav_options.get('login'), webdav_options.get('password'))
+        else:
+            self.auth = (self.webdav.login, self.webdav.password)
 
     def valid(self):
         """Validates of WebDAV and proxy settings.

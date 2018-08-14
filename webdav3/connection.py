@@ -22,7 +22,7 @@ class WebDAVSettings(ConnectionSettings):
     ns = "webdav:"
     prefix = "webdav_"
     keys = {'hostname', 'login', 'password', 'token', 'root', 'cert_path', 'key_path', 'recv_speed', 'send_speed',
-            'verbose'}
+            'verbose', 'authtype'}
 
     hostname = None
     login = None
@@ -34,6 +34,7 @@ class WebDAVSettings(ConnectionSettings):
     recv_speed = None
     send_speed = None
     verbose = None
+    authtype = None
 
     def __init__(self, options):
 
@@ -66,6 +67,10 @@ class WebDAVSettings(ConnectionSettings):
 
         if not self.token and not self.login:
             raise OptionNotValid(name="login", value=self.login, ns=self.ns)
+
+        if self.authtype:
+            if self.authtype != 'basic' or self.authtype != 'digest':
+                raise OptionNotValid(name="authtype", value=self.authtype, ns=self.ns)
 
 
 class ProxySettings(ConnectionSettings):
